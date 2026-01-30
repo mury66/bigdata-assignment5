@@ -1,0 +1,26 @@
+task 4
+
+
+hive> CREATE DATABASE IF NOT EXISTS bigdata_hive;
+OK
+Time taken: 0.418 seconds
+hive> USE bigdata_hive;
+OK
+Time taken: 0.026 seconds
+hive> CREATE EXTERNAL TABLE users (
+    >     id INT,
+    >     name STRING,
+    >     age INT
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > STORED AS TEXTFILE
+    > LOCATION '/user/bigdata/users';
+OK
+Time taken: 0.319 seconds
+hive> SELECT * FROM users;
+OK
+1       Ahmed   25
+2       Sara    30
+3       Omar    28
+Time taken: 1.151 seconds, Fetched: 3 row(s)

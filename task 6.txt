@@ -1,0 +1,165 @@
+task 6
+
+
+PS C:\Users\LOQ> docker exec -it sqoop bash
+root@4ce795e1d36e:/dataops# cat > /tmp/pyspark_task6.py <<'EOF'
+> from pyspark.sql import SparkSession
+> from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+>
+> print("="*60)
+> print("Task 6: PySpark - Reading and Processing Data")
+> print("="*60)
+>
+> # Create Spark Session
+> spark = SparkSession.builder \
+>     .appName("BigData-Assignment5-Task6") \
+>     .getOrCreate()
+>
+> spark.sparkContext.setLogLevel("ERROR")
+>
+> # Define schema for users data
+> schema = StructType([
+>     StructField("id", IntegerType(), True),
+>     StructField("name", StringType(), True),
+>     StructField("age", IntegerType(), True)
+> ])
+>
+> # Read data from HDFS
+> print("\n1. Reading data from HDFS...")
+> df_users = spark.read.csv("/user/bigdata/users/part-m-00000", schema=schema)
+>
+> print("\n2. Showing users data:")
+> df_users.show()
+>
+> print("\n3. Data Statistics:")
+> print(f"Total Records: {df_users.count()}")
+> df_users.describe().show()
+>
+> print("\n4. Age Analysis:")
+> df_users.groupBy("age").count().orderBy("age").show()
+>
+> print("\n5. Users above age 25:")
+> df_users.filter(df_users.age > 25).show()
+>
+> # Create new data
+> print("\n6. Creating new records to export:")
+> new_data = [
+>     (7, "Ali", 24),
+>     (8, "Nour", 31),
+>     (9, "Heba", 26)
+> ]
+>
+> df_new = spark.createDataFrame(new_data, schema)
+> print("\nNew users to add:")
+> df_new.show()
+>
+> # Save new data to HDFS
+> print("\n7. Saving new data to HDFS...")
+> df_new.write.mode("overwrite").csv("/user/bigdata/pyspark_export", header=False)
+> print("✓ Data saved to /user/bigdata/pyspark_export")
+>
+> print("\n" + "="*60)
+> print("✓ Task 6 Completed Successfully!")
+> print("="*60)
+>
+> spark.stop()
+> EOF
+root@4ce795e1d36e:/dataops# ls -la /tmp/pyspark_task6.py
+-rw-r--r-- 1 root root 1534 Jan 30 05:53 /tmp/pyspark_task6.py
+root@4ce795e1d36e:/dataops# spark-submit /tmp/pyspark_task6.py
+============================================================
+Task 6: PySpark - Reading and Processing Data
+============================================================
+26/01/30 05:55:58 INFO SparkContext: Running Spark version 3.4.1
+26/01/30 05:55:58 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/01/30 05:55:58 INFO ResourceUtils: ==============================================================
+26/01/30 05:55:58 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/01/30 05:55:58 INFO ResourceUtils: ==============================================================
+26/01/30 05:55:58 INFO SparkContext: Submitted application: BigData-Assignment5-Task6
+26/01/30 05:55:58 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/01/30 05:55:58 INFO ResourceProfile: Limiting resource is cpu
+26/01/30 05:55:58 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/01/30 05:55:58 INFO SecurityManager: Changing view acls to: root
+26/01/30 05:55:58 INFO SecurityManager: Changing modify acls to: root
+26/01/30 05:55:58 INFO SecurityManager: Changing view acls groups to:
+26/01/30 05:55:58 INFO SecurityManager: Changing modify acls groups to:
+26/01/30 05:55:58 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/01/30 05:55:59 INFO Utils: Successfully started service 'sparkDriver' on port 45857.
+26/01/30 05:55:59 INFO SparkEnv: Registering MapOutputTracker
+26/01/30 05:55:59 INFO SparkEnv: Registering BlockManagerMaster
+26/01/30 05:55:59 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/01/30 05:55:59 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/01/30 05:55:59 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/01/30 05:55:59 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-1d1a24b0-0b60-488b-9e80-e60f166c3946
+26/01/30 05:55:59 INFO MemoryStore: MemoryStore started with capacity 366.3 MiB
+26/01/30 05:55:59 INFO SparkEnv: Registering OutputCommitCoordinator
+26/01/30 05:55:59 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/01/30 05:55:59 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/01/30 05:55:59 INFO Executor: Starting executor ID driver on host 4ce795e1d36e
+26/01/30 05:55:59 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/01/30 05:55:59 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 39129.
+26/01/30 05:55:59 INFO NettyBlockTransferService: Server created on 4ce795e1d36e:39129
+26/01/30 05:55:59 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/01/30 05:55:59 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 4ce795e1d36e, 39129, None)
+26/01/30 05:55:59 INFO BlockManagerMasterEndpoint: Registering block manager 4ce795e1d36e:39129 with 366.3 MiB RAM, BlockManagerId(driver, 4ce795e1d36e, 39129, None)
+26/01/30 05:55:59 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 4ce795e1d36e, 39129, None)
+26/01/30 05:55:59 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 4ce795e1d36e, 39129, None)
+
+1. Reading data from HDFS...
+
+2. Showing users data:
++---+-----+---+
+| id| name|age|
++---+-----+---+
+|  1|Ahmed| 25|
+|  2| Sara| 30|
+|  3| Omar| 28|
++---+-----+---+
+
+
+3. Data Statistics:
+Total Records: 3
++-------+---+-----+------------------+
+|summary| id| name|               age|
++-------+---+-----+------------------+
+|  count|  3|    3|                 3|
+|   mean|2.0| null|27.666666666666668|
+| stddev|1.0| null| 2.516611478423583|
+|    min|  1|Ahmed|                25|
+|    max|  3| Sara|                30|
++-------+---+-----+------------------+
+
+
+4. Age Analysis:
++---+-----+
+|age|count|
++---+-----+
+| 25|    1|
+| 28|    1|
+| 30|    1|
++---+-----+
+
+
+5. Users above age 25:
++---+----+---+
+| id|name|age|
++---+----+---+
+|  2|Sara| 30|
+|  3|Omar| 28|
++---+----+---+
+
+
+6. Creating new records to export:
+
+New users to add:
++---+----+---+
+| id|name|age|
++---+----+---+
+|  7| Ali| 24|
+|  8|Nour| 31|
+|  9|Heba| 26|
++---+----+---+
+
+
+7. Saving new data to HDFS...
+✓ Data saved to /user/bigdata/pyspark_export
